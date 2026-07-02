@@ -592,8 +592,18 @@
   window.addEventListener("appinstalled", () => { if (installBar) installBar.style.display = "none"; });
 
   if ("serviceWorker" in navigator) {
+    let reloaded = false;
+    // 새 서비스워커가 제어를 넘겨받으면 한 번 새로고침 → 최신 버전 즉시 반영
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloaded) return;
+      reloaded = true;
+      window.location.reload();
+    });
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("sw.js").catch(() => {});
+      navigator.serviceWorker.register("sw.js").then((reg) => {
+        // 주기적으로 업데이트 확인
+        reg.update();
+      }).catch(() => {});
     });
   }
 

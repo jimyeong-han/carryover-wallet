@@ -1,5 +1,7 @@
-// 이월 가계부 서비스워커 — 오프라인 캐시
-const CACHE = "wallet-carryover-v1";
+// 이월 가계부 서비스워커
+// - HTML/내비게이션: 네트워크 우선(업데이트 즉시 반영), 오프라인 시 캐시 폴백
+// - 정적 자산(아이콘/매니페스트): 캐시 우선
+const CACHE = "wallet-carryover-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -23,17 +25,36 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-// 캐시 우선, 없으면 네트워크 (오프라인에서도 앱이 뜨도록)
+function isHtml(req) {
+  return req.mode === "navigate" ||
+    (req.headers.get("accept") || "").includes("text/html");
+}
+
 self.addEventListener("fetch", (e) => {
-  if (e.request.method !== "GET") return;
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(e.request).then((res) => {
+  const req = e.request;
+  if (req.method !== "GET") return;
+
+  // HTML: 네트워크 우선 → 실패 시 캐시
+  if (isHtml(req)) {
+    e.respondWith(
+      fetch(req).then((res) => {
         const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
+        caches.open(CACHE).then((c) => c.put("./index.html", copy)).catch(() => {});
         return res;
-      }).catch(() => caches.match("./index.html"));
+      }).catch(() => caches.match(req).then((c) => c || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // 정적 자산: 캐시 우선 → 없으면 네트워크
+  e.respondWith(
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        return res;
+      });
     })
   );
 });
