@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">이월 가계부</string>
+    <string name="title_activity_main">이월 가계부</string>
+    <string name="package_name">com.jimyeonghan.carryoverwallet</string>
+    <string name="custom_url_scheme">com.jimyeonghan.carryoverwallet</string>
+    <string name="widget_desc">오늘 쓸 수 있는 돈(이월 포함)을 홈 화면에 표시</string>
+</resources>

@@ -373,6 +373,17 @@
 
     renderPie();
     renderList();
+    updateWidgetPayload();
+  }
+
+  // 안드로이드 홈 화면 위젯용 요약값 기록 (항상 '현재 달' 기준)
+  function updateWidgetPayload() {
+    try {
+      const cm = curMonth();
+      const b = state.months[cm] || { daily: state.defaultDaily, expenses: [] };
+      const spent = b.expenses.reduce((a, e) => a + e.amount, 0);
+      localStorage.setItem("wallet_widget", JSON.stringify({ daily: b.daily, spent: spent, month: cm }));
+    } catch (e) {}
   }
 
   function goMonth(delta) {

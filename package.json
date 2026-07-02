@@ -1,0 +1,17 @@
+{
+  "name": "carryover-wallet",
+  "version": "1.0.0",
+  "description": "일일 예산을 정하고 남은 잔액을 이월해 생활비를 관리하는 가계부 (PWA + Android 위젯)",
+  "private": true,
+  "scripts": {
+    "sync": "cap sync android",
+    "open:android": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  }
+}
