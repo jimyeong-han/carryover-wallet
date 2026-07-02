@@ -39,8 +39,19 @@
     margin: 0 auto;
     line-height: 1.4;
   }
-  h1 { font-size: 20px; margin: 4px 0 2px; }
+  h1 { font-size: 20px; margin: 0; }
   .muted { color: var(--sub); font-size: 13px; }
+
+  /* 상단 고정 헤더 */
+  .appbar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    /* 좌우로 body 패딩만큼 넓혀 전체 폭을 덮음 */
+    margin: -16px -14px 0; padding: 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .icon-btn { flex: none; width: 42px; height: 40px; padding: 0; font-size: 18px; }
   .card {
     background: var(--card);
     border: 1px solid var(--line);
@@ -127,7 +138,7 @@
 
   /* 스크롤 제한 목록 */
   #listCard.scrollable { max-height: 340px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  #listCard.collapsed { display: none; }
+  #listCard.collapsed, #pieCard.collapsed { display: none; }
 
   dialog {
     border: 1px solid var(--line); background: var(--card); color: var(--txt);
@@ -141,7 +152,11 @@
 </head>
 <body>
 
-  <h1>💰 이월 가계부</h1>
+  <!-- 상단 고정 헤더: 타이틀(좌) · 설정(우) -->
+  <header class="appbar">
+    <h1>💰 이월 가계부</h1>
+    <button class="ghost icon-btn" id="settingsBtn" aria-label="설정">⚙</button>
+  </header>
 
   <!-- 월 이동 (전체 뷰가 월 단위로 바뀜) -->
   <div class="month-nav">
@@ -170,12 +185,6 @@
     <div class="stat"><div class="k">이달 사용액</div><div class="v" id="sSpent">-</div></div>
   </div>
 
-  <!-- 분류별 지출 파이 -->
-  <div class="card">
-    <div style="font-size:15px; font-weight:700; margin-bottom:4px;">분류별 지출</div>
-    <div id="pieWrap" class="pie-wrap"></div>
-  </div>
-
   <!-- 지출 입력 -->
   <div class="card">
     <label class="field">지출 기록</label>
@@ -188,6 +197,17 @@
     <button style="width:100%; margin-top:12px;" id="addBtn">＋ 지출 추가</button>
   </div>
 
+  <!-- 분류별 지출 파이 (접이식, 지출 내역 바로 위) -->
+  <div class="section-title">
+    <button class="list-toggle" id="pieToggle" aria-expanded="true">
+      <span class="caret">▾</span>
+      <h2>분류별 지출</h2>
+    </button>
+  </div>
+  <div class="card" id="pieCard">
+    <div id="pieWrap" class="pie-wrap"></div>
+  </div>
+
   <!-- 지출 목록 -->
   <div class="section-title">
     <button class="list-toggle" id="listToggle" aria-expanded="true">
@@ -195,7 +215,6 @@
       <h2>지출 내역</h2>
       <span class="muted" id="listCount"></span>
     </button>
-    <button class="ghost" style="padding:8px 12px; font-size:13px;" id="settingsBtn">⚙ 설정</button>
   </div>
   <div class="card" id="listCard"></div>
 
@@ -255,6 +274,7 @@
     if (!s.months || typeof s.months !== "object") s.months = {};
     if (typeof s.defaultDaily !== "number") s.defaultDaily = DEFAULT_DAILY;
     if (typeof s.listOpen !== "boolean") s.listOpen = true;
+    if (typeof s.pieOpen !== "boolean") s.pieOpen = true;
     // 각 월 버킷 정합성
     Object.keys(s.months).forEach(k => {
       const b = s.months[k] || {};
@@ -367,6 +387,12 @@
 
   function renderPie() {
     const wrap = document.getElementById("pieWrap");
+
+    // 접기/펼치기 상태 반영
+    document.getElementById("pieToggle").setAttribute("aria-expanded", String(state.pieOpen));
+    document.getElementById("pieCard").classList.toggle("collapsed", !state.pieOpen);
+    if (!state.pieOpen) { wrap.innerHTML = ""; return; }
+
     // 분류별 합계
     const sums = {};
     CATS.forEach(c => { sums[c.id] = 0; });
@@ -517,7 +543,11 @@
   }
   function removeExpense(id) {
     const b = bucket();
-    b.expenses = b.expenses.filter(e => e.id !== id);
+    const e = b.expenses.find(x => x.id === id);
+    if (!e) return;
+    const name = (e.memo && e.memo.trim()) || (catMap[e.cat] || "지출").split(" ").slice(1).join(" ");
+    if (!confirm(`'${name}' ${won(e.amount)} 기록을 삭제할까요?`)) return;
+    b.expenses = b.expenses.filter(x => x.id !== id);
     save(); render();
   }
 
@@ -569,6 +599,12 @@
   document.getElementById("listToggle").onclick = () => {
     state.listOpen = !state.listOpen;
     save(); renderList();
+  };
+
+  // 분류별 지출 접기/펼치기
+  document.getElementById("pieToggle").onclick = () => {
+    state.pieOpen = !state.pieOpen;
+    save(); renderPie();
   };
 
   // ---- PWA: 설치 안내 & 서비스워커 ----
