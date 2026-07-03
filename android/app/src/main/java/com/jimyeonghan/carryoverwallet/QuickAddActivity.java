@@ -69,7 +69,15 @@ public class QuickAddActivity extends AppCompatActivity {
             catButtons[i] = b;
             catRow.addView(b);
         }
-        selectCat(0);
+        // 위젯에서 분류를 지정해 들어온 경우 미리 선택
+        int initial = 0;
+        String presetCat = getIntent() != null ? getIntent().getStringExtra("cat") : null;
+        if (presetCat != null) {
+            for (int i = 0; i < CAT_IDS.length; i++) {
+                if (CAT_IDS[i].equals(presetCat)) { initial = i; break; }
+            }
+        }
+        selectCat(initial);
 
         amount.requestFocus();
 

@@ -389,7 +389,13 @@
       const cm = curMonth();
       const b = state.months[cm] || { daily: state.defaultDaily, expenses: [] };
       const spent = b.expenses.reduce((a, e) => a + e.amount, 0);
-      localStorage.setItem("wallet_widget", JSON.stringify({ daily: b.daily, spent: spent, month: cm }));
+      const t = todayStr();
+      const todaySpent = b.expenses.filter(e => e.date === t).reduce((a, e) => a + e.amount, 0);
+      const recent = b.expenses.slice().sort((a, x) => x.id - a.id).slice(0, 3).map(e => ({
+        name: (e.memo && e.memo.trim()) || ((catMap[e.cat] || "📦 기타").split(" ").slice(1).join(" ")),
+        amount: e.amount
+      }));
+      localStorage.setItem("wallet_widget", JSON.stringify({ daily: b.daily, spent, month: cm, todaySpent, recent }));
     } catch (e) {}
   }
 

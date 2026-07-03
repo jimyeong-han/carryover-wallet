@@ -40,14 +40,18 @@ public class WidgetConfigActivity extends AppCompatActivity {
     static final int TEXT_WHITE = 0xFFFFFFFF;
     static final int TEXT_BLACK = 0xFF15181F;
 
+    static final String[] STYLE_LABELS = {"진행바", "요약", "최근 지출", "빠른 추가"};
+
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private int selectedColor = COLORS[0];
     private int alpha = 255;               // 0~255 (불투명도)
     private int textColor = TEXT_WHITE;
+    private int styleIndex = 0;
     private ImageView preview;
     private TextView previewText;
     private View[] swatches;
     private Button textWhiteBtn, textBlackBtn;
+    private Button[] styleButtons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,12 +77,34 @@ public class WidgetConfigActivity extends AppCompatActivity {
         LinearLayout colorRow = findViewById(R.id.cfg_colors);
         textWhiteBtn = findViewById(R.id.cfg_text_white);
         textBlackBtn = findViewById(R.id.cfg_text_black);
+        LinearLayout styleRow = findViewById(R.id.cfg_styles);
 
         // 현재 저장된 값 불러오기
         SharedPreferences sp = getSharedPreferences(WalletWidget.PREFS, MODE_PRIVATE);
         selectedColor = sp.getInt("widget_bg_color", COLORS[0]);
         alpha = sp.getInt("widget_bg_alpha", 255);
         textColor = sp.getInt("widget_text_color", TEXT_WHITE);
+        styleIndex = sp.getInt("widget_style", 0);
+
+        // 위젯 내용 스타일 버튼
+        styleButtons = new Button[STYLE_LABELS.length];
+        for (int i = 0; i < STYLE_LABELS.length; i++) {
+            final int idx = i;
+            Button sb = new Button(this);
+            sb.setText(STYLE_LABELS[i]);
+            sb.setAllCaps(false);
+            sb.setTextColor(0xFFE8EAED);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, 0, dp(8), 0);
+            sb.setLayoutParams(lp);
+            sb.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { styleIndex = idx; refreshStyleButtons(); }
+            });
+            styleButtons[i] = sb;
+            styleRow.addView(sb);
+        }
+        refreshStyleButtons();
 
         textWhiteBtn.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { textColor = TEXT_WHITE; refreshTextButtons(); updatePreview(); }
@@ -138,6 +164,12 @@ public class WidgetConfigActivity extends AppCompatActivity {
         }
     }
 
+    private void refreshStyleButtons() {
+        for (int i = 0; i < styleButtons.length; i++) {
+            styleButtons[i].setBackgroundResource(i == styleIndex ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
+        }
+    }
+
     private void refreshTextButtons() {
         boolean white = textColor == TEXT_WHITE;
         textWhiteBtn.setBackgroundResource(white ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
@@ -156,6 +188,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
             .putInt("widget_bg_color", selectedColor)
             .putInt("widget_bg_alpha", alpha)
             .putInt("widget_text_color", textColor)
+            .putInt("widget_style", styleIndex)
             .apply();
 
         // 모든 위젯 갱신

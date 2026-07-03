@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 배경: 흰색 라운드 셰이프에 색 필터(색상) + 이미지 알파(투명도)를 코드에서 적용 -->
     <ImageView
         android:id="@+id/widget_bg_img"
         android:layout_width="match_parent"
@@ -16,61 +15,130 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:padding="14dp">
 
+        <!-- 상단: 라벨/잔액 + 빠른추가 -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/widget_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오늘 쓸 수 있는 돈"
+                    android:textColor="#B0FFFFFF"
+                    android:textSize="12sp"
+                    android:shadowColor="#80000000"
+                    android:shadowRadius="3" />
+
+                <TextView
+                    android:id="@+id/widget_balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="-"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="22sp"
+                    android:shadowColor="#80000000"
+                    android:shadowRadius="3" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/widget_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="오늘 쓸 수 있는 돈"
-                android:textColor="#9AA0AC"
-                android:textSize="12sp"
-                android:shadowColor="#80000000"
-                android:shadowRadius="3" />
-
-            <TextView
-                android:id="@+id/widget_balance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="-"
-                android:textColor="#37D67A"
+                android:id="@+id/widget_add"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:text="＋"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
                 android:textStyle="bold"
-                android:textSize="24sp"
-                android:shadowColor="#80000000"
-                android:shadowRadius="3" />
+                android:background="@drawable/widget_add_bg"
+                android:contentDescription="빠른 지출 추가" />
+        </LinearLayout>
+
+        <!-- 스타일 A: 진행 바 + 오늘 사용 -->
+        <LinearLayout
+            android:id="@+id/sec_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/widget_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/widget_progress" />
 
             <TextView
-                android:id="@+id/widget_sub"
+                android:id="@+id/widget_progress_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="5dp"
                 android:text=""
-                android:textColor="#9AA0AC"
+                android:textColor="#B0FFFFFF"
                 android:textSize="11sp"
                 android:shadowColor="#80000000"
                 android:shadowRadius="3" />
         </LinearLayout>
 
+        <!-- 스타일 B: 이번 달 요약 -->
         <TextView
-            android:id="@+id/widget_add"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="10dp"
-            android:gravity="center"
-            android:text="＋"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:background="@drawable/widget_add_bg"
-            android:contentDescription="빠른 지출 추가" />
+            android:id="@+id/sec_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text=""
+            android:textColor="#B0FFFFFF"
+            android:textSize="12sp"
+            android:shadowColor="#80000000"
+            android:shadowRadius="3"
+            android:visibility="gone" />
+
+        <!-- 스타일 C: 최근 지출 -->
+        <LinearLayout
+            android:id="@+id/sec_recent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView android:id="@+id/widget_rec1" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end" android:textColor="#B0FFFFFF" android:textSize="12sp" android:shadowColor="#80000000" android:shadowRadius="3" />
+            <TextView android:id="@+id/widget_rec2" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:maxLines="1" android:ellipsize="end" android:textColor="#B0FFFFFF" android:textSize="12sp" android:shadowColor="#80000000" android:shadowRadius="3" />
+            <TextView android:id="@+id/widget_rec3" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:maxLines="1" android:ellipsize="end" android:textColor="#B0FFFFFF" android:textSize="12sp" android:shadowColor="#80000000" android:shadowRadius="3" />
+        </LinearLayout>
+
+        <!-- 스타일 D: 분류별 빠른 추가 -->
+        <LinearLayout
+            android:id="@+id/sec_quick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView android:id="@+id/widget_q_food" android:layout_width="0dp" android:layout_weight="1" android:layout_height="38dp" android:layout_marginEnd="6dp" android:gravity="center" android:text="🍚 식비" android:textColor="#E8EAED" android:textSize="13sp" android:background="@drawable/widget_add_bg_ghost" />
+            <TextView android:id="@+id/widget_q_cafe" android:layout_width="0dp" android:layout_weight="1" android:layout_height="38dp" android:layout_marginEnd="6dp" android:gravity="center" android:text="☕ 카페" android:textColor="#E8EAED" android:textSize="13sp" android:background="@drawable/widget_add_bg_ghost" />
+            <TextView android:id="@+id/widget_q_etc" android:layout_width="0dp" android:layout_weight="1" android:layout_height="38dp" android:gravity="center" android:text="📦 기타" android:textColor="#E8EAED" android:textSize="13sp" android:background="@drawable/widget_add_bg_ghost" />
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>
