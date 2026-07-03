@@ -44,11 +44,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:hint="내용 (선택)"
+        android:hint="내용 (선택, 최대 20자)"
         android:textColorHint="#6B7280"
         android:textColor="#E8EAED"
         android:textSize="16sp"
         android:inputType="text"
+        android:maxLength="20"
         android:backgroundTint="#2C313C" />
 
     <LinearLayout

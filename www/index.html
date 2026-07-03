@@ -192,7 +192,7 @@
       <input id="amtInput" type="number" inputmode="numeric" placeholder="금액" />
       <input id="dateInput" type="date" />
     </div>
-    <input id="memoInput" type="text" placeholder="내용 (선택)" style="margin-top:10px;" />
+    <input id="memoInput" type="text" placeholder="내용 (선택, 최대 20자)" maxlength="20" style="margin-top:10px;" />
     <div class="chips" id="catChips"></div>
     <button style="width:100%; margin-top:12px;" id="addBtn">＋ 지출 추가</button>
   </div>
@@ -600,12 +600,15 @@
       dateEl.focus();
       return;
     }
-    curExp().push({ id: idSeq++, date, amount, memo: memoEl.value.trim(), cat: selectedCat });
+    curExp().push({ id: idSeq++, date, amount, memo: memoEl.value.trim().slice(0, 20), cat: selectedCat });
     save();
     amtEl.value = ""; memoEl.value = "";
     syncDateInput();
     render();
-    amtEl.focus();
+    // 포커스를 풀어 키보드가 다시 올라오지 않도록 (금액칸으로 넘기지 않음)
+    if (amtEl.blur) amtEl.blur();
+    if (memoEl.blur) memoEl.blur();
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   }
   function removeExpense(id) {
     const b = bucket();
