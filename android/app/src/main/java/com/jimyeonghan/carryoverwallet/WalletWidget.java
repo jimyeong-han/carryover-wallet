@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -31,6 +32,12 @@ public class WalletWidget extends AppWidgetProvider {
         updateAll(ctx, mgr, ids);
     }
 
+    // 크기 변경 시 다시 그림(높이에 따라 스타일 전환)
+    @Override
+    public void onAppWidgetOptionsChanged(Context ctx, AppWidgetManager mgr, int id, Bundle newOptions) {
+        updateOne(ctx, mgr, id);
+    }
+
     public static void updateAll(Context ctx, AppWidgetManager mgr, int[] ids) {
         if (ids == null) return;
         for (int id : ids) updateOne(ctx, mgr, id);
@@ -44,6 +51,12 @@ public class WalletWidget extends AppWidgetProvider {
         String month = sp.getString("month", "");
         boolean hasData = sp.contains("daily");
         int style = sp.getInt("widget_style", 0);
+
+        // 위젯 높이가 낮으면(1줄) 진행바/빠른추가는 요약으로 대체
+        Bundle opts = mgr.getAppWidgetOptions(id);
+        int minH = opts != null ? opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0) : 0;
+        boolean shortWidget = minH > 0 && minH < 110;
+        if (shortWidget && (style == 0 || style == 3)) style = 1;
 
         Calendar cal = Calendar.getInstance();
         String curMonth = String.format(Locale.US, "%04d-%02d",
