@@ -83,6 +83,20 @@
                     android:scaleType="fitXY"
                     android:contentDescription="@null"
                     android:visibility="gone" />
+
+                <!-- 빠른 추가(분류 칩) -->
+                <LinearLayout
+                    android:id="@+id/rc_quick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical|end"
+                    android:visibility="gone">
+
+                    <TextView android:id="@+id/rc_q_food" android:layout_width="42dp" android:layout_height="40dp" android:layout_marginStart="6dp" android:gravity="center" android:text="🍚" android:textSize="18sp" android:background="@drawable/widget_add_bg_ghost" />
+                    <TextView android:id="@+id/rc_q_cafe" android:layout_width="42dp" android:layout_height="40dp" android:layout_marginStart="6dp" android:gravity="center" android:text="☕" android:textSize="18sp" android:background="@drawable/widget_add_bg_ghost" />
+                    <TextView android:id="@+id/rc_q_etc" android:layout_width="42dp" android:layout_height="40dp" android:layout_marginStart="6dp" android:gravity="center" android:text="📦" android:textSize="18sp" android:background="@drawable/widget_add_bg_ghost" />
+                </LinearLayout>
             </LinearLayout>
 
             <TextView
@@ -158,18 +172,5 @@
             <TextView android:id="@+id/widget_rec3" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:maxLines="1" android:ellipsize="end" android:textColor="#B0FFFFFF" android:textSize="12sp" android:shadowColor="#80000000" android:shadowRadius="3" />
         </LinearLayout>
 
-        <!-- 하단 D: 분류별 빠른 추가 -->
-        <LinearLayout
-            android:id="@+id/sec_quick"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView android:id="@+id/widget_q_food" android:layout_width="0dp" android:layout_weight="1" android:layout_height="38dp" android:layout_marginEnd="6dp" android:gravity="center" android:text="🍚 식비" android:textColor="#E8EAED" android:textSize="13sp" android:background="@drawable/widget_add_bg_ghost" />
-            <TextView android:id="@+id/widget_q_cafe" android:layout_width="0dp" android:layout_weight="1" android:layout_height="38dp" android:layout_marginEnd="6dp" android:gravity="center" android:text="☕ 카페" android:textColor="#E8EAED" android:textSize="13sp" android:background="@drawable/widget_add_bg_ghost" />
-            <TextView android:id="@+id/widget_q_etc" android:layout_width="0dp" android:layout_weight="1" android:layout_height="38dp" android:gravity="center" android:text="📦 기타" android:textColor="#E8EAED" android:textSize="13sp" android:background="@drawable/widget_add_bg_ghost" />
-        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

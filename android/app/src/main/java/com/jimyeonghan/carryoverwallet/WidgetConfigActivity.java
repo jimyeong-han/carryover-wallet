@@ -40,8 +40,8 @@ public class WidgetConfigActivity extends AppCompatActivity {
     static final int TEXT_WHITE = 0xFFFFFFFF;
     static final int TEXT_BLACK = 0xFF15181F;
 
-    static final String[] STYLE_LABELS = {"없음", "진행바", "요약", "최근 지출", "빠른 추가"};
-    static final String[] RIGHT_LABELS = {"없음", "하루 가능", "7일 막대", "분류 막대"};
+    static final String[] STYLE_LABELS = {"없음", "진행바", "요약", "최근 지출"};
+    static final String[] RIGHT_LABELS = {"없음", "하루 가능", "7일 막대", "분류 막대", "빠른 추가"};
 
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private int selectedColor = COLORS[0];

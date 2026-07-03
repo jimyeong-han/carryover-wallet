@@ -71,11 +71,11 @@ public class WalletWidget extends AppWidgetProvider {
         long balance = accBudget - spent;
         if (month.isEmpty()) balance = (long) daily * day;
 
-        // 높이 낮으면 진행바/빠른추가 → 요약
+        // 높이 낮으면 진행바 → 요약
         Bundle opts = mgr.getAppWidgetOptions(id);
         int minH = opts != null ? opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0) : 0;
         boolean shortWidget = minH > 0 && minH < 110;
-        if (shortWidget && (style == 1 || style == 4)) style = 2;
+        if (shortWidget && style == 1) style = 2;
 
         RemoteViews v = new RemoteViews(ctx.getPackageName(), R.layout.wallet_widget);
 
@@ -103,10 +103,12 @@ public class WalletWidget extends AppWidgetProvider {
         if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
 
         // ---- 우측 가로 콘텐츠 ----
+        // sec_right는 항상 보이게 두어(빈 스페이서) ＋ 버튼을 우측 끝에 고정
         if (!hasData) right = 0;
-        v.setViewVisibility(R.id.sec_right, right == 0 ? View.GONE : View.VISIBLE);
+        v.setViewVisibility(R.id.sec_right, View.VISIBLE);
         v.setViewVisibility(R.id.rc_text, View.GONE);
         v.setViewVisibility(R.id.rc_img, View.GONE);
+        v.setViewVisibility(R.id.rc_quick, View.GONE);
         if (right == 1) {                 // 하루 가능
             int remainDays = isCur ? (dim - day + 1) : 1;
             if (remainDays < 1) remainDays = 1;
@@ -120,13 +122,17 @@ public class WalletWidget extends AppWidgetProvider {
         } else if (right == 3) {          // 분류 막대
             v.setImageViewBitmap(R.id.rc_img, drawCatBar(sp.getString("cats", "[]")));
             v.setViewVisibility(R.id.rc_img, View.VISIBLE);
+        } else if (right == 4) {          // 분류별 빠른 추가
+            v.setOnClickPendingIntent(R.id.rc_q_food, quickIntent(ctx, "food", 2, flags));
+            v.setOnClickPendingIntent(R.id.rc_q_cafe, quickIntent(ctx, "cafe", 3, flags));
+            v.setOnClickPendingIntent(R.id.rc_q_etc, quickIntent(ctx, "etc", 4, flags));
+            v.setViewVisibility(R.id.rc_quick, View.VISIBLE);
         }
 
         // ---- 하단 섹션 ----
         v.setViewVisibility(R.id.sec_progress, View.GONE);
         v.setViewVisibility(R.id.sec_summary, View.GONE);
         v.setViewVisibility(R.id.sec_recent, View.GONE);
-        v.setViewVisibility(R.id.sec_quick, View.GONE);
 
         if (hasData) {
             switch (style) {
@@ -140,12 +146,6 @@ public class WalletWidget extends AppWidgetProvider {
                 case 3:
                     fillRecent(v, sp);
                     v.setViewVisibility(R.id.sec_recent, View.VISIBLE);
-                    break;
-                case 4:
-                    v.setOnClickPendingIntent(R.id.widget_q_food, quickIntent(ctx, "food", 2, flags));
-                    v.setOnClickPendingIntent(R.id.widget_q_cafe, quickIntent(ctx, "cafe", 3, flags));
-                    v.setOnClickPendingIntent(R.id.widget_q_etc, quickIntent(ctx, "etc", 4, flags));
-                    v.setViewVisibility(R.id.sec_quick, View.VISIBLE);
                     break;
                 case 1: {
                     int pct = accBudget > 0 ? (int) Math.min(100, Math.round(spent * 100.0 / accBudget)) : 0;
