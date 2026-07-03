@@ -71,7 +71,7 @@ public class WalletWidget extends AppWidgetProvider {
         v.setTextColor(R.id.widget_balance, textColor);
         v.setTextColor(R.id.widget_label, muted);
         v.setTextColor(R.id.widget_progress_text, muted);
-        v.setTextColor(R.id.widget_summary, muted);
+        v.setTextColor(R.id.sec_summary, muted);
         v.setTextColor(R.id.widget_rec1, muted);
         v.setTextColor(R.id.widget_rec2, muted);
         v.setTextColor(R.id.widget_rec3, muted);
@@ -93,7 +93,7 @@ public class WalletWidget extends AppWidgetProvider {
                 case 1: { // 이번 달 요약
                     long budget = (long) daily * dim;
                     long remain = budget - spent;
-                    v.setTextViewText(R.id.widget_summary,
+                    v.setTextViewText(R.id.sec_summary,
                         "예산 " + shortWon(budget) + " · 사용 " + shortWon(spent) + " · 남음 " + shortWon(remain));
                     v.setViewVisibility(R.id.sec_summary, View.VISIBLE);
                     break;
