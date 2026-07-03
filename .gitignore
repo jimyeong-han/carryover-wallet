@@ -15,3 +15,8 @@ android/capacitor-cordova-android-plugins/
 android/local.properties
 *.apk
 *.aab
+
+# 릴리스 서명 비밀정보 (절대 커밋 금지)
+android/keystore.properties
+*.jks
+*.keystore
