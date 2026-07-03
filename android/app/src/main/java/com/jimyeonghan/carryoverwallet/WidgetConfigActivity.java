@@ -40,18 +40,21 @@ public class WidgetConfigActivity extends AppCompatActivity {
     static final int TEXT_WHITE = 0xFFFFFFFF;
     static final int TEXT_BLACK = 0xFF15181F;
 
-    static final String[] STYLE_LABELS = {"진행바", "요약", "최근 지출", "빠른 추가"};
+    static final String[] STYLE_LABELS = {"없음", "진행바", "요약", "최근 지출", "빠른 추가"};
+    static final String[] RIGHT_LABELS = {"없음", "하루 가능", "7일 막대", "분류 막대"};
 
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private int selectedColor = COLORS[0];
     private int alpha = 255;               // 0~255 (불투명도)
     private int textColor = TEXT_WHITE;
-    private int styleIndex = 0;
+    private int styleIndex = 0;            // 하단
+    private int rightIndex = 1;            // 우측
     private ImageView preview;
     private TextView previewText;
     private View[] swatches;
     private Button textWhiteBtn, textBlackBtn;
     private Button[] styleButtons;
+    private Button[] rightButtons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
         textWhiteBtn = findViewById(R.id.cfg_text_white);
         textBlackBtn = findViewById(R.id.cfg_text_black);
         LinearLayout styleRow = findViewById(R.id.cfg_styles);
+        LinearLayout rightRow = findViewById(R.id.cfg_rights);
 
         // 현재 저장된 값 불러오기
         SharedPreferences sp = getSharedPreferences(WalletWidget.PREFS, MODE_PRIVATE);
@@ -85,19 +89,26 @@ public class WidgetConfigActivity extends AppCompatActivity {
         alpha = sp.getInt("widget_bg_alpha", 255);
         textColor = sp.getInt("widget_text_color", TEXT_WHITE);
         styleIndex = sp.getInt("widget_style", 0);
+        rightIndex = sp.getInt("widget_right", 1);
 
-        // 위젯 내용 스타일 버튼
+        // 우측 내용 버튼
+        rightButtons = new Button[RIGHT_LABELS.length];
+        for (int i = 0; i < RIGHT_LABELS.length; i++) {
+            final int idx = i;
+            Button rb = makeChip(RIGHT_LABELS[i]);
+            rb.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { rightIndex = idx; refreshRightButtons(); }
+            });
+            rightButtons[i] = rb;
+            rightRow.addView(rb);
+        }
+        refreshRightButtons();
+
+        // 하단 내용 버튼
         styleButtons = new Button[STYLE_LABELS.length];
         for (int i = 0; i < STYLE_LABELS.length; i++) {
             final int idx = i;
-            Button sb = new Button(this);
-            sb.setText(STYLE_LABELS[i]);
-            sb.setAllCaps(false);
-            sb.setTextColor(0xFFE8EAED);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0, 0, dp(8), 0);
-            sb.setLayoutParams(lp);
+            Button sb = makeChip(STYLE_LABELS[i]);
             sb.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) { styleIndex = idx; refreshStyleButtons(); }
             });
@@ -164,9 +175,27 @@ public class WidgetConfigActivity extends AppCompatActivity {
         }
     }
 
+    private Button makeChip(String label) {
+        Button b = new Button(this);
+        b.setText(label);
+        b.setAllCaps(false);
+        b.setTextColor(0xFFE8EAED);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, 0, dp(8), 0);
+        b.setLayoutParams(lp);
+        return b;
+    }
+
     private void refreshStyleButtons() {
         for (int i = 0; i < styleButtons.length; i++) {
             styleButtons[i].setBackgroundResource(i == styleIndex ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
+        }
+    }
+
+    private void refreshRightButtons() {
+        for (int i = 0; i < rightButtons.length; i++) {
+            rightButtons[i].setBackgroundResource(i == rightIndex ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
         }
     }
 
@@ -189,6 +218,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
             .putInt("widget_bg_alpha", alpha)
             .putInt("widget_text_color", textColor)
             .putInt("widget_style", styleIndex)
+            .putInt("widget_right", rightIndex)
             .apply();
 
         // 모든 위젯 갱신

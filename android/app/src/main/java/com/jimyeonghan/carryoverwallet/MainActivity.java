@@ -59,6 +59,8 @@ public class MainActivity extends BridgeActivity {
             String month = o.optString("month", "");
             int todaySpent = o.optInt("todaySpent", 0);
             String recent = o.has("recent") ? o.getJSONArray("recent").toString() : "[]";
+            String days7 = o.has("days7") ? o.getJSONArray("days7").toString() : "[]";
+            String cats = o.has("cats") ? o.getJSONArray("cats").toString() : "[]";
 
             SharedPreferences sp = getSharedPreferences(WalletWidget.PREFS, MODE_PRIVATE);
             sp.edit()
@@ -67,6 +69,8 @@ public class MainActivity extends BridgeActivity {
                 .putString("month", month)
                 .putInt("todaySpent", todaySpent)
                 .putString("recent", recent)
+                .putString("days7", days7)
+                .putString("cats", cats)
                 .apply();
 
             AppWidgetManager mgr = AppWidgetManager.getInstance(this);
