@@ -386,6 +386,37 @@
     } catch (e) {}
   }
 
+  // 위젯 ＋ 팝업으로 추가된 지출(대기열)을 가계부에 반영
+  function flushPendingFromWidget() {
+    try {
+      if (!(window.WidgetBridge && window.WidgetBridge.getPending)) return;
+      const raw = window.WidgetBridge.getPending();
+      const arr = JSON.parse(raw || "[]");
+      if (!Array.isArray(arr) || arr.length === 0) return;
+      const cm = curMonth();
+      const b = ensureMonth(cm);
+      const existing = new Set(b.expenses.map(e => e.id));
+      let added = 0;
+      arr.forEach(it => {
+        const id = Number(it.id) || (idSeq++);
+        if (existing.has(id)) return;
+        const amount = Math.round(Number(it.amount));
+        if (!amount || amount <= 0) return;
+        const date = (typeof it.date === "string" && it.date.slice(0, 7) === cm) ? it.date : todayStr();
+        b.expenses.push({ id, date, amount, memo: (it.memo || "").toString(), cat: it.cat || "etc" });
+        existing.add(id);
+        added++;
+      });
+      window.WidgetBridge.clearPending();
+      if (added > 0) {
+        viewMonth = cm;          // 방금 추가된 지출이 보이도록 현재 달로 이동
+        save();
+        syncDateInput();
+        render();
+      }
+    } catch (e) {}
+  }
+
   function goMonth(delta) {
     const ks = monthKeys();
     const idx = ks.indexOf(viewMonth);
@@ -656,6 +687,12 @@
     });
   }
 
+  // 위젯 팝업으로 추가된 지출을 앱이 보일 때마다 반영
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") flushPendingFromWidget();
+  });
+  window.addEventListener("focus", flushPendingFromWidget);
+
   // 첫 실행
   ensureMonth(curMonth());
   pruneMonths();
@@ -663,6 +700,7 @@
   syncDateInput();
   renderChips();
   render();
+  flushPendingFromWidget();
 })();
 </script>
 </body>

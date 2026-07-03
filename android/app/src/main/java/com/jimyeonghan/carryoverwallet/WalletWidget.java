@@ -56,15 +56,22 @@ public class WalletWidget extends AppWidgetProvider {
         v.setTextViewText(R.id.widget_balance, hasData ? formatWon(balance) : "앱을 한 번 열어주세요");
         v.setTextViewText(R.id.widget_sub, hasData ? ("일 " + formatWon(daily) + " · " + Integer.parseInt(curMonth.substring(5)) + "월") : "");
 
-        // 위젯 탭 → 앱 열기
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
+
+        // 위젯 본문 탭 → 앱 열기
         Intent open = ctx.getPackageManager().getLaunchIntentForPackage(ctx.getPackageName());
         if (open != null) {
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
             PendingIntent pi = PendingIntent.getActivity(ctx, 0, open, flags);
             v.setOnClickPendingIntent(R.id.widget_root, pi);
         }
+
+        // ＋ 버튼 → 빠른 추가 팝업 (앱 미실행)
+        Intent quick = new Intent(ctx, QuickAddActivity.class);
+        quick.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent qpi = PendingIntent.getActivity(ctx, 1, quick, flags);
+        v.setOnClickPendingIntent(R.id.widget_add, qpi);
 
         mgr.updateAppWidget(id, v);
     }

@@ -24,6 +24,13 @@
 
         </activity>
 
+        <!-- 빠른 지출 추가 팝업 (위젯 ＋ 버튼) -->
+        <activity
+            android:name=".QuickAddActivity"
+            android:theme="@style/QuickAddDialog"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
         <!-- 홈 화면 위젯 -->
         <receiver
             android:name=".WalletWidget"
