@@ -127,6 +127,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
             qcRow.addView(qb);
         }
         refreshQuickCats();
+        refreshRightButtons();   // qcBox 할당 후 초기 표시 상태 반영(빠른추가면 바로 표시)
 
         // 하단 내용 버튼
         styleButtons = new Button[STYLE_LABELS.length];
