@@ -59,6 +59,13 @@ public class WalletWidget extends AppWidgetProvider {
         v.setInt(R.id.widget_bg_img, "setColorFilter", bgColor);
         v.setInt(R.id.widget_bg_img, "setImageAlpha", bgAlpha);
 
+        // 글자색 (흰/검). 금액=선택색, 라벨/보조=반투명 변형
+        int textColor = sp.getInt("widget_text_color", 0xFFFFFFFF);
+        int mutedColor = (textColor & 0x00FFFFFF) | 0xB0000000;
+        v.setTextColor(R.id.widget_balance, textColor);
+        v.setTextColor(R.id.widget_label, mutedColor);
+        v.setTextColor(R.id.widget_sub, mutedColor);
+
         v.setTextViewText(R.id.widget_label, "오늘 쓸 수 있는 돈");
         v.setTextViewText(R.id.widget_balance, hasData ? formatWon(balance) : "앱을 한 번 열어주세요");
         v.setTextViewText(R.id.widget_sub, hasData ? ("일 " + formatWon(daily) + " · " + Integer.parseInt(curMonth.substring(5)) + "월") : "");

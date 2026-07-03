@@ -23,21 +23,31 @@ import java.util.Locale;
  */
 public class WidgetConfigActivity extends AppCompatActivity {
 
-    // 선택 가능한 배경색 (모두 어두운 톤 → 흰색/밝은 글자 가독성 유지)
+    // 선택 가능한 배경색 (어두운 톤 + 밝은 톤)
     static final int[] COLORS = {
         0xFF1A1D24, // 다크(기본)
         0xFF000000, // 블랙
         0xFF23262B, // 차콜
         0xFF10233F, // 딥블루
         0xFF241B3A, // 딥퍼플
-        0xFF10261C  // 딥그린
+        0xFF10261C, // 딥그린
+        0xFFFFFFFF, // 화이트
+        0xFFF2F3F5, // 라이트그레이
+        0xFFFDF6E3, // 크림
+        0xFFDCE7F5  // 연블루
     };
+
+    static final int TEXT_WHITE = 0xFFFFFFFF;
+    static final int TEXT_BLACK = 0xFF15181F;
 
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private int selectedColor = COLORS[0];
     private int alpha = 255;               // 0~255 (불투명도)
+    private int textColor = TEXT_WHITE;
     private ImageView preview;
+    private TextView previewText;
     private View[] swatches;
+    private Button textWhiteBtn, textBlackBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +67,26 @@ public class WidgetConfigActivity extends AppCompatActivity {
         }
 
         preview = findViewById(R.id.cfg_preview);
+        previewText = findViewById(R.id.cfg_preview_text);
         final TextView alphaLabel = findViewById(R.id.cfg_alpha_label);
         SeekBar alphaBar = findViewById(R.id.cfg_alpha);
         LinearLayout colorRow = findViewById(R.id.cfg_colors);
+        textWhiteBtn = findViewById(R.id.cfg_text_white);
+        textBlackBtn = findViewById(R.id.cfg_text_black);
 
         // 현재 저장된 값 불러오기
         SharedPreferences sp = getSharedPreferences(WalletWidget.PREFS, MODE_PRIVATE);
         selectedColor = sp.getInt("widget_bg_color", COLORS[0]);
         alpha = sp.getInt("widget_bg_alpha", 255);
+        textColor = sp.getInt("widget_text_color", TEXT_WHITE);
+
+        textWhiteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { textColor = TEXT_WHITE; refreshTextButtons(); updatePreview(); }
+        });
+        textBlackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { textColor = TEXT_BLACK; refreshTextButtons(); updatePreview(); }
+        });
+        refreshTextButtons();
 
         // 색상 스와치 생성
         swatches = new View[COLORS.length];
@@ -116,9 +138,16 @@ public class WidgetConfigActivity extends AppCompatActivity {
         }
     }
 
+    private void refreshTextButtons() {
+        boolean white = textColor == TEXT_WHITE;
+        textWhiteBtn.setBackgroundResource(white ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
+        textBlackBtn.setBackgroundResource(!white ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
+    }
+
     private void updatePreview() {
         preview.setColorFilter(selectedColor);
         preview.setImageAlpha(alpha);
+        previewText.setTextColor(textColor);
     }
 
     private void saveAndFinish() {
@@ -126,6 +155,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
         sp.edit()
             .putInt("widget_bg_color", selectedColor)
             .putInt("widget_bg_alpha", alpha)
+            .putInt("widget_text_color", textColor)
             .apply();
 
         // 모든 위젯 갱신

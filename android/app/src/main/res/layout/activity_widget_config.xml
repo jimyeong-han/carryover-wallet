@@ -30,12 +30,13 @@
             android:contentDescription="@null" />
 
         <TextView
+            android:id="@+id/cfg_preview_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="14dp"
             android:text="12,000원"
-            android:textColor="#37D67A"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:textSize="20sp"
             android:shadowColor="#80000000"
@@ -50,12 +51,53 @@
         android:textColor="#9AA0AC"
         android:textSize="13sp" />
 
-    <LinearLayout
-        android:id="@+id/cfg_colors"
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:orientation="horizontal" />
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/cfg_colors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="글자색"
+        android:textColor="#9AA0AC"
+        android:textSize="13sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cfg_text_white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:text="흰색"
+            android:textColor="#E8EAED"
+            android:background="@drawable/widget_add_bg_ghost" />
+
+        <Button
+            android:id="@+id/cfg_text_black"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:text="검정"
+            android:textColor="#E8EAED"
+            android:background="@drawable/widget_add_bg_ghost" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/cfg_alpha_label"
