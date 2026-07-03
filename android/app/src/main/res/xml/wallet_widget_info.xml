@@ -8,4 +8,6 @@
     android:initialLayout="@layout/wallet_widget"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
+    android:configure="com.jimyeonghan.carryoverwallet.WidgetConfigActivity"
+    android:widgetFeatures="reconfigurable|configuration_optional"
     android:description="@string/widget_desc" />

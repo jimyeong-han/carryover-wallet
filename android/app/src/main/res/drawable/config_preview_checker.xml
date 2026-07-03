@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 미리보기 배경(투명도 확인용). 밝은/어두운 두 톤으로 투명도가 눈에 띄게 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#8A93A3" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+    <item android:left="0dp" android:top="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#5B6270" />
+            <corners android:radius="20dp" />
+            <padding android:left="0dp" />
+        </shape>
+    </item>
+</layer-list>

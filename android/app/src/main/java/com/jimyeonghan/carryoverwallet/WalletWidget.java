@@ -52,6 +52,13 @@ public class WalletWidget extends AppWidgetProvider {
         }
 
         RemoteViews v = new RemoteViews(ctx.getPackageName(), R.layout.wallet_widget);
+
+        // 배경 색상/투명도 (설정에서 지정, 기본 다크 불투명)
+        int bgColor = sp.getInt("widget_bg_color", 0xFF1A1D24);
+        int bgAlpha = sp.getInt("widget_bg_alpha", 255);
+        v.setInt(R.id.widget_bg_img, "setColorFilter", bgColor);
+        v.setInt(R.id.widget_bg_img, "setImageAlpha", bgAlpha);
+
         v.setTextViewText(R.id.widget_label, "오늘 쓸 수 있는 돈");
         v.setTextViewText(R.id.widget_balance, hasData ? formatWon(balance) : "앱을 한 번 열어주세요");
         v.setTextViewText(R.id.widget_sub, hasData ? ("일 " + formatWon(daily) + " · " + Integer.parseInt(curMonth.substring(5)) + "월") : "");
