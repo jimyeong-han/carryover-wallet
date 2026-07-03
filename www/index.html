@@ -220,7 +220,10 @@
 
   <!-- 설정 다이얼로그 -->
   <dialog id="settingsDlg">
-    <h2 style="margin-top:0;">설정</h2>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+      <h2 style="margin:0;">설정</h2>
+      <button id="closeSet" aria-label="닫기" style="background:none; border:none; color:var(--sub); font-size:22px; line-height:1; padding:4px 8px; width:auto; cursor:pointer;">✕</button>
+    </div>
     <label class="field">하루 사용 가능 금액 (일일 예산)</label>
     <input id="dailyInput" type="number" inputmode="numeric" placeholder="예: 20000" />
     <div class="row" style="margin-top:16px;">
@@ -640,6 +643,7 @@
     dlg.showModal();
   };
   document.getElementById("cancelSet").onclick = () => dlg.close();
+  document.getElementById("closeSet").onclick = () => dlg.close();
   document.getElementById("saveSet").onclick = () => {
     const v = Math.round(Number(document.getElementById("dailyInput").value));
     if (v > 0) {

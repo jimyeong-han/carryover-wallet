@@ -30,9 +30,10 @@ public class WalletWidget extends AppWidgetProvider {
 
     public static final String PREFS = "CarryoverWidget";
 
-    // 분류 색상(웹 CATS와 동일 순서/값)
+    // 분류 색상/이모지(웹 CATS와 동일 순서/값)
     static final String[] CAT_IDS = {"food", "cafe", "trans", "shop", "fun", "etc"};
     static final int[] CAT_COLORS = {0xFF3987E5, 0xFF199E70, 0xFFC98500, 0xFF9085E9, 0xFFE66767, 0xFF8A93A3};
+    static final String[] CAT_EMOJI = {"🍚", "☕", "🚌", "🛒", "🎮", "📦"};
 
     @Override
     public void onUpdate(Context ctx, AppWidgetManager mgr, int[] ids) {
@@ -122,10 +123,20 @@ public class WalletWidget extends AppWidgetProvider {
         } else if (right == 3) {          // 분류 막대
             v.setImageViewBitmap(R.id.rc_img, drawCatBar(sp.getString("cats", "[]")));
             v.setViewVisibility(R.id.rc_img, View.VISIBLE);
-        } else if (right == 4) {          // 분류별 빠른 추가
-            v.setOnClickPendingIntent(R.id.rc_q_food, quickIntent(ctx, "food", 2, flags));
-            v.setOnClickPendingIntent(R.id.rc_q_cafe, quickIntent(ctx, "cafe", 3, flags));
-            v.setOnClickPendingIntent(R.id.rc_q_etc, quickIntent(ctx, "etc", 4, flags));
+        } else if (right == 4) {          // 분류별 빠른 추가 (표시 분류 선택 가능)
+            int[] slots = { R.id.rc_q1, R.id.rc_q2, R.id.rc_q3 };
+            String[] chosen = sp.getString("widget_quick_cats", "food,cafe,etc").split(",");
+            for (int i = 0; i < slots.length; i++) {
+                String cid = (i < chosen.length) ? chosen[i].trim() : "";
+                String emoji = emojiOf(cid);
+                if (!cid.isEmpty() && emoji != null) {
+                    v.setTextViewText(slots[i], emoji);
+                    v.setOnClickPendingIntent(slots[i], quickIntent(ctx, cid, 10 + i, flags));
+                    v.setViewVisibility(slots[i], View.VISIBLE);
+                } else {
+                    v.setViewVisibility(slots[i], View.GONE);
+                }
+            }
             v.setViewVisibility(R.id.rc_quick, View.VISIBLE);
         }
 
@@ -274,6 +285,11 @@ public class WalletWidget extends AppWidgetProvider {
     private static int colorOf(String cat) {
         for (int i = 0; i < CAT_IDS.length; i++) if (CAT_IDS[i].equals(cat)) return CAT_COLORS[i];
         return 0xFF8A93A3;
+    }
+
+    private static String emojiOf(String cat) {
+        for (int i = 0; i < CAT_IDS.length; i++) if (CAT_IDS[i].equals(cat)) return CAT_EMOJI[i];
+        return null;
     }
 
     static String won(long n) {

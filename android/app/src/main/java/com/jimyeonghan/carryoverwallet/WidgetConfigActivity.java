@@ -43,6 +43,11 @@ public class WidgetConfigActivity extends AppCompatActivity {
     static final String[] STYLE_LABELS = {"없음", "진행바", "요약", "최근 지출"};
     static final String[] RIGHT_LABELS = {"없음", "하루 가능", "7일 막대", "분류 막대", "빠른 추가"};
 
+    // 빠른추가 표시 분류 후보 (WalletWidget와 동일 순서)
+    static final String[] QC_IDS = {"food", "cafe", "trans", "shop", "fun", "etc"};
+    static final String[] QC_LABELS = {"🍚 식비", "☕ 카페", "🚌 교통", "🛒 생활", "🎮 여가", "📦 기타"};
+    static final int QC_MAX = 3;
+
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private int selectedColor = COLORS[0];
     private int alpha = 255;               // 0~255 (불투명도)
@@ -55,6 +60,9 @@ public class WidgetConfigActivity extends AppCompatActivity {
     private Button textWhiteBtn, textBlackBtn;
     private Button[] styleButtons;
     private Button[] rightButtons;
+    private Button[] qcButtons;
+    private boolean[] qcSel = new boolean[QC_IDS.length];
+    private View qcBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +111,22 @@ public class WidgetConfigActivity extends AppCompatActivity {
             rightRow.addView(rb);
         }
         refreshRightButtons();
+
+        // 빠른추가 표시 분류 (다중 선택, 최대 3)
+        qcBox = findViewById(R.id.cfg_quickcats_box);
+        LinearLayout qcRow = findViewById(R.id.cfg_quickcats);
+        loadQuickCats(sp.getString("widget_quick_cats", "food,cafe,etc"));
+        qcButtons = new Button[QC_IDS.length];
+        for (int i = 0; i < QC_IDS.length; i++) {
+            final int idx = i;
+            Button qb = makeChip(QC_LABELS[i]);
+            qb.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) { toggleQuickCat(idx); }
+            });
+            qcButtons[i] = qb;
+            qcRow.addView(qb);
+        }
+        refreshQuickCats();
 
         // 하단 내용 버튼
         styleButtons = new Button[STYLE_LABELS.length];
@@ -197,6 +221,38 @@ public class WidgetConfigActivity extends AppCompatActivity {
         for (int i = 0; i < rightButtons.length; i++) {
             rightButtons[i].setBackgroundResource(i == rightIndex ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
         }
+        if (qcBox != null) qcBox.setVisibility(rightIndex == 4 ? View.VISIBLE : View.GONE);
+    }
+
+    private void loadQuickCats(String csv) {
+        for (int i = 0; i < qcSel.length; i++) qcSel[i] = false;
+        if (csv == null) return;
+        for (String s : csv.split(",")) {
+            String c = s.trim();
+            for (int i = 0; i < QC_IDS.length; i++) if (QC_IDS[i].equals(c)) qcSel[i] = true;
+        }
+    }
+
+    private int qcCount() { int c = 0; for (boolean b : qcSel) if (b) c++; return c; }
+
+    private void toggleQuickCat(int idx) {
+        if (!qcSel[idx] && qcCount() >= QC_MAX) {
+            android.widget.Toast.makeText(this, "최대 " + QC_MAX + "개까지 선택할 수 있어요", android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        qcSel[idx] = !qcSel[idx];
+        refreshQuickCats();
+    }
+
+    private void refreshQuickCats() {
+        for (int i = 0; i < qcButtons.length; i++)
+            qcButtons[i].setBackgroundResource(qcSel[i] ? R.drawable.widget_save_bg : R.drawable.widget_add_bg_ghost);
+    }
+
+    private String quickCatsCsv() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < QC_IDS.length; i++) if (qcSel[i]) { if (sb.length() > 0) sb.append(","); sb.append(QC_IDS[i]); }
+        return sb.toString();
     }
 
     private void refreshTextButtons() {
@@ -219,6 +275,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
             .putInt("widget_text_color", textColor)
             .putInt("widget_style", styleIndex)
             .putInt("widget_right", rightIndex)
+            .putString("widget_quick_cats", quickCatsCsv())
             .apply();
 
         // 모든 위젯 갱신
